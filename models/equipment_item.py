@@ -8,7 +8,7 @@ class EquipmentItem(models.Model):
     _inherit = ["mail.thread"]
     _order = "name, id"
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, translate=True)
     code = fields.Char(
         required=True,
         copy=False,
