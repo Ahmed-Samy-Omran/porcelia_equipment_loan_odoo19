@@ -13,7 +13,7 @@ class EquipmentItem(models.Model):
         required=True,
         copy=False,
         index=True,
-        default=lambda self: _("New"),
+        default="New",
     )
     category_id = fields.Many2one("equipment.category", ondelete="restrict")
     image_1920 = fields.Image(copy=True)
@@ -67,11 +67,15 @@ class EquipmentItem(models.Model):
         "CHECK(daily_rate >= 0)", "The daily rate cannot be negative.",
     )
 
+    # Generate a unique code for new equipment items.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if not vals.get("code") or vals["code"] == _("New"):
-                vals["code"] = self.env["ir.sequence"].next_by_code("equipment.item") or _("New")
+            if not vals.get("code") or vals["code"] == "New":
+                vals["code"] = (
+                    self.env["ir.sequence"].next_by_code("equipment.item")
+                    or "New"
+                )
         return super().create(vals_list)
 
     @api.depends("scrapped", "in_maintenance", "loan_ids.state", "loan_ids.date_return")
@@ -132,7 +136,7 @@ class EquipmentItem(models.Model):
         for item in self:
             item.total_days_on_loan = totals.get(item, 0)
 
-    # Open the loans belonging to this equipment.
+    # Open the loans belonging to this equipment item.
     def action_view_loans(self):
         self.ensure_one()
 
@@ -146,6 +150,7 @@ class EquipmentItem(models.Model):
 
         return action
 
+    # Toggle the maintenance status of the selected items.
     def action_toggle_maintenance(self):
         for item in self:
             if item.state == "on_loan":
@@ -155,6 +160,7 @@ class EquipmentItem(models.Model):
         self.in_maintenance = not self.in_maintenance
         return True
 
+    # Toggle the scrapped status of the selected items.
     def action_toggle_scrapped(self):
         for item in self:
             if item.state == "on_loan":
