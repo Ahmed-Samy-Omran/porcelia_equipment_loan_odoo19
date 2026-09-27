@@ -27,8 +27,32 @@ The backend part of the project is complete.
   views, categories, menus, smart buttons, and the user-form extension.
 - **Wizard, report, and cron (A5–A7):** a multi-loan return wizard, a QWeb PDF
   loan receipt, and a daily overdue-loan reminder job.
-- **Tests (A8):** module tests cover the workflow, security, cron, wizard,
-  report, sequences, constraints, and grouped aggregates.
+
+## Backend map
+
+```mermaid
+flowchart TB
+    Category["Equipment categories<br/>Hierarchy and item count"]
+    Item["Equipment items<br/>Code, condition, availability"]
+    Loan["Equipment loans<br/>Workflow, lateness, penalty"]
+    Wizard["Return wizard<br/>Return one or more loans"]
+    Cron["Daily overdue job<br/>Flag, message, activity"]
+    Report["QWeb loan receipt"]
+    Security["Security\nUser and Manager access"]
+    Views["Views and menus<br/>List, form, search, kanban"]
+    Data["Configuration data<br/>Sequences and demo data"]
+
+    Category -->|"category_id"| Item
+    Item -->|"item_id"| Loan
+    Loan --> Wizard
+    Loan --> Cron
+    Loan --> Report
+    Item --> Views
+    Loan --> Views
+    Loan --> Security
+    Item --> Data
+    Loan --> Data
+```
 
 ## What I deliberately skipped
 

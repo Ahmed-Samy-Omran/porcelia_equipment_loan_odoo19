@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Equipment loan list view. -->
     <record id="equipment_loan_view_list" model="ir.ui.view">
         <field name="name">equipment.loan.list</field>
         <field name="model">equipment.loan</field>
@@ -29,6 +30,7 @@
         </field>
     </record>
 
+    <!-- Equipment loan form view. -->
     <record id="equipment_loan_view_form" model="ir.ui.view">
         <field name="name">equipment.loan.form</field>
         <field name="model">equipment.loan</field>
@@ -81,6 +83,7 @@
         </field>
     </record>
 
+    <!-- Equipment loan search view. -->
     <record id="equipment_loan_view_search" model="ir.ui.view">
         <field name="name">equipment.loan.search</field>
         <field name="model">equipment.loan</field>

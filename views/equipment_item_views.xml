@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Equipment item kanban view. -->
     <record id="equipment_item_view_kanban" model="ir.ui.view">
         <field name="name">equipment.item.kanban</field>
         <field name="model">equipment.item</field>
@@ -33,6 +34,7 @@
         </field>
     </record>
 
+    <!-- Equipment item list view. -->
     <record id="equipment_item_view_list" model="ir.ui.view">
         <field name="name">equipment.item.list</field>
         <field name="model">equipment.item</field>
@@ -52,6 +54,7 @@
         </field>
     </record>
 
+    <!-- Equipment item form view. -->
     <record id="equipment_item_view_form" model="ir.ui.view">
         <field name="name">equipment.item.form</field>
         <field name="model">equipment.item</field>
@@ -101,6 +104,7 @@
         </field>
     </record>
 
+    <!-- Equipment item search view. -->
     <record id="equipment_item_view_search" model="ir.ui.view">
         <field name="name">equipment.item.search</field>
         <field name="model">equipment.item</field>

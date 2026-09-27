@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Equipment category list view. -->
     <record id="equipment_category_view_list" model="ir.ui.view">
         <field name="name">equipment.category.list</field>
         <field name="model">equipment.category</field>
@@ -13,6 +14,7 @@
         </field>
     </record>
 
+    <!-- Equipment category form view. -->
     <record id="equipment_category_view_form" model="ir.ui.view">
         <field name="name">equipment.category.form</field>
         <field name="model">equipment.category</field>
@@ -37,6 +39,7 @@
         </field>
     </record>
 
+    <!-- Equipment category search view. -->
     <record id="equipment_category_view_search" model="ir.ui.view">
         <field name="name">equipment.category.search</field>
         <field name="model">equipment.category</field>
