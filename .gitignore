@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.log
+*.pyo
+*.swp
+.DS_Store
+.idea/
+.vscode/
+# Local AI / development helper files
+AGENTS.md
+# Local project documentation (never pushed)
+PROJECT_CONTEXT.md

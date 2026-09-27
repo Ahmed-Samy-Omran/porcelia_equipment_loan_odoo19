@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="equipment_item_view_kanban" model="ir.ui.view">
+        <field name="name">equipment.item.kanban</field>
+        <field name="model">equipment.item</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample_size="5" quick_create="false">
+                <field name="state"/>
+                <field name="category_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <img t-att-src="image_1920" class="o_kanban_image" alt="Item"/>
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                    <small class="o_kanban_record_subtitle text-muted"><field name="code"/></small>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="category_id"/>
+                                <field name="daily_rate" widget="monetary"/>
+                                <div class="text-muted">Condition: <field name="condition_score"/></div>
+                            </div>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <field name="state" widget="badge"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="equipment_item_view_list" model="ir.ui.view">
+        <field name="name">equipment.item.list</field>
+        <field name="model">equipment.item</field>
+        <field name="arch" type="xml">
+            <list string="Items" decoration-muted="not active" decoration-danger="state == 'scrapped'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="condition_score"/>
+                <field name="daily_rate" widget="monetary"/>
+                <field name="state" widget="badge"/>
+                <field name="loan_count" optional="hide"/>
+                <field name="total_days_on_loan" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="equipment_item_view_form" model="ir.ui.view">
+        <field name="name">equipment.item.form</field>
+        <field name="model">equipment.item</field>
+        <field name="arch" type="xml">
+            <form string="Item">
+                <header>
+                    <button name="action_toggle_maintenance" type="object" class="oe_highlight"
+                            string="Send to Maintenance" invisible="state != 'available'"/>
+                    <button name="action_toggle_maintenance" type="object"
+                            string="Back to Service" invisible="state != 'maintenance'"/>
+                    <button name="action_toggle_scrapped" type="object"
+                            string="Scrap Item" invisible="state in ('on_loan', 'scrapped')"/>
+                    <button name="action_toggle_scrapped" type="object"
+                            string="Restore Item" invisible="state != 'scrapped'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="available,on_loan,maintenance,scrapped"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_loans" type="object" class="oe_stat_button" icon="fa-exchange">
+                            <field name="loan_count" widget="statinfo" string="Loans"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'zoom': True, 'convert_to_webp': True, 'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. MacBook Pro 16"/></h1>
+                    </div>
+                    <group>
+                        <group name="main">
+                            <field name="code"/>
+                            <field name="category_id"/>
+                            <field name="condition_score"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group name="commercial">
+                            <field name="daily_rate"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_days_on_loan"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="equipment_item_view_search" model="ir.ui.view">
+        <field name="name">equipment.item.search</field>
+        <field name="model">equipment.item</field>
+        <field name="arch" type="xml">
+            <search string="Items">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category_id"/>
+                <filter name="filter_available" string="Available" domain="[('state', '=', 'available')]"/>
+                <filter name="filter_on_loan" string="On Loan" domain="[('state', '=', 'on_loan')]"/>
+                <separator/>
+                <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_equipment_item" model="ir.actions.act_window">
+        <field name="name">Items</field>
+        <field name="res_model">equipment.item</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="equipment_item_view_search"/>
+        <field name="context">{'search_default_filter_archived': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add your first piece of equipment</p>
+            <p>Track every lendable item, its daily rate and its condition.</p>
+        </field>
+    </record>
+
+</odoo>

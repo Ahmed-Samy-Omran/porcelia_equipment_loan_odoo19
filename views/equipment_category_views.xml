@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="equipment_category_view_list" model="ir.ui.view">
+        <field name="name">equipment.category.list</field>
+        <field name="model">equipment.category</field>
+        <field name="arch" type="xml">
+            <list string="Categories" default_order="complete_name">
+                <field name="complete_name" string="Name"/>
+                <field name="parent_id" string="Parent"/>
+                <field name="item_count" string="# Items"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="equipment_category_view_form" model="ir.ui.view">
+        <field name="name">equipment.category.form</field>
+        <field name="model">equipment.category</field>
+        <field name="arch" type="xml">
+            <form string="Category">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_items" type="object" class="oe_stat_button" icon="fa-cubes">
+                            <field name="item_count" widget="statinfo" string="Items"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Laptops"/></h1>
+                    </div>
+                    <group>
+                        <field name="parent_id" options="{'no_create': True}"/>
+                        <field name="child_ids" widget="many2one_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="equipment_category_view_search" model="ir.ui.view">
+        <field name="name">equipment.category.search</field>
+        <field name="model">equipment.category</field>
+        <field name="arch" type="xml">
+            <search string="Categories">
+                <field name="name"/>
+                <field name="parent_id"/>
+                <filter name="filter_top_level" string="Top Level Categories" domain="[('parent_id', '=', False)]"/>
+                <separator/>
+                <filter name="filter_with_items" string="With Items" domain="[('item_ids', '!=', False)]"/>
+                <group>
+                    <filter name="group_parent" string="Parent Category" context="{'group_by': 'parent_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_equipment_category" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">equipment.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="equipment_category_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a category</p>
+            <p>Group your equipment by family, using parent categories to nest them.</p>
+        </field>
+    </record>
+
+</odoo>

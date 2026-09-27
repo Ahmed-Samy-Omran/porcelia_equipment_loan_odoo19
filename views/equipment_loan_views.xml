@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="equipment_loan_view_list" model="ir.ui.view">
+        <field name="name">equipment.loan.list</field>
+        <field name="model">equipment.loan</field>
+        <field name="arch" type="xml">
+            <list string="Loans"
+                  decoration-danger="is_overdue"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-bf="state == 'confirmed' and not is_overdue">
+                <field name="name"/>
+                <field name="item_id"/>
+                <field name="borrower_id" widget="many2one_avatar_user"/>
+                <field name="date_start"/>
+                <field name="date_due"/>
+                <field name="date_return" optional="hide"/>
+                <field name="days_late" optional="show"/>
+                <field name="penalty_amount" widget="monetary" optional="show"/>
+                <field name="is_overdue" widget="boolean_toggle" optional="hide"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <button name="action_return" type="object" string="Return" icon="fa-sign-in"
+                        invisible="state != 'confirmed'"/>
+                <button name="action_confirm" type="object" string="Confirm" icon="fa-check"
+                        invisible="state != 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="equipment_loan_view_form" model="ir.ui.view">
+        <field name="name">equipment.loan.form</field>
+        <field name="model">equipment.loan</field>
+        <field name="arch" type="xml">
+            <form string="Loan">
+                <header>
+                    <button name="action_confirm" type="object" class="oe_highlight" string="Confirm"
+                            invisible="state != 'draft'"/>
+                    <button name="action_return" type="object" class="oe_highlight" string="Return"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state not in ('draft', 'confirmed')"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state == 'draft'"/>
+                    <button name="%(action_report_equipment_loan)d" type="action" string="Print Receipt"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,returned,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group name="loan">
+                            <field name="item_id"/>
+                            <field name="borrower_id" widget="many2one_avatar_user"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group name="dates">
+                            <field name="date_start"/>
+                            <field name="date_due"/>
+                            <field name="date_return"/>
+                            <field name="duration_days" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Follow Up" invisible="not is_overdue and not days_late">
+                        <field name="is_overdue"/>
+                        <field name="days_late"/>
+                        <field name="penalty_amount" widget="monetary"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Why is this equipment needed?"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="equipment_loan_view_search" model="ir.ui.view">
+        <field name="name">equipment.loan.search</field>
+        <field name="model">equipment.loan</field>
+        <field name="arch" type="xml">
+            <search string="Loans">
+                <field name="name"/>
+                <field name="item_id"/>
+                <field name="borrower_id"/>
+                <filter name="my_loans" string="My Loans" domain="[('borrower_id', '=', uid)]"/>
+                <separator/>
+                <filter name="overdue" string="Overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter name="active_loans" string="Active" domain="[('state', 'in', ['draft', 'confirmed'])]"/>
+                <separator/>
+                <filter name="to_return" string="To Return" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_item" string="Item" context="{'group_by': 'item_id'}"/>
+                    <filter name="group_borrower" string="Borrower" context="{'group_by': 'borrower_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_equipment_loan" model="ir.actions.act_window">
+        <field name="name">Loans</field>
+        <field name="res_model">equipment.loan</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="equipment_loan_view_search"/>
+        <field name="context">{'search_default_active_loans': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No loan yet</p>
+            <p>Request a piece of equipment, a manager confirms it and it shows up on the dashboard.</p>
+        </field>
+    </record>
+
+</odoo>

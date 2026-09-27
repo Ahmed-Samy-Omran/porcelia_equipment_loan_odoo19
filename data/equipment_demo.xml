@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="category_electronics" model="equipment.category">
+        <field name="name">Electronics</field>
+    </record>
+
+    <record id="category_measuring" model="equipment.category">
+        <field name="name">Measuring Tools</field>
+    </record>
+
+    <record id="category_display" model="equipment.category">
+        <field name="name">Sample Cases &amp; Display Stands</field>
+        <field name="parent_id" ref="category_measuring"/>
+    </record>
+
+    <record id="item_laptop" model="equipment.item">
+        <field name="name">MacBook Pro 16</field>
+        <field name="category_id" ref="category_electronics"/>
+        <field name="daily_rate">25.00</field>
+        <field name="condition_score">95</field>
+    </record>
+
+    <record id="item_projector" model="equipment.item">
+        <field name="name">Epson Projector</field>
+        <field name="category_id" ref="category_electronics"/>
+        <field name="daily_rate">15.00</field>
+        <field name="condition_score">80</field>
+    </record>
+
+    <record id="item_laser" model="equipment.item">
+        <field name="name">Laser Distance Meter</field>
+        <field name="category_id" ref="category_measuring"/>
+        <field name="daily_rate">8.00</field>
+        <field name="condition_score">90</field>
+    </record>
+
+    <record id="item_sample_case" model="equipment.item">
+        <field name="name">Porcelia Sample Case</field>
+        <field name="category_id" ref="category_display"/>
+        <field name="daily_rate">5.00</field>
+        <field name="condition_score">70</field>
+    </record>
+
+    <record id="item_display_stand" model="equipment.item">
+        <field name="name">Display Stand</field>
+        <field name="category_id" ref="category_display"/>
+        <field name="daily_rate">3.00</field>
+        <field name="condition_score">0</field>
+        <field name="in_maintenance" eval="True"/>
+    </record>
+
+    <record id="loan_laptop_draft" model="equipment.loan">
+        <field name="item_id" ref="item_projector"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="date_start" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_due" eval="(DateTime.now() + timedelta(days=4)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="notes" type="html"><p>Impress the Lyon showroom on Friday.</p></field>
+    </record>
+
+    <record id="loan_laptop_confirmed" model="equipment.loan">
+        <field name="item_id" ref="item_laptop"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="date_start" eval="(DateTime.now() - timedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_due" eval="(DateTime.now() + timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">confirmed</field>
+    </record>
+
+    <record id="loan_laser_overdue" model="equipment.loan">
+        <field name="item_id" ref="item_laser"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="date_start" eval="(DateTime.now() - timedelta(days=12)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_due" eval="(DateTime.now() - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">confirmed</field>
+    </record>
+
+    <record id="loan_sample_case_returned" model="equipment.loan">
+        <field name="item_id" ref="item_sample_case"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="date_start" eval="(DateTime.now() - timedelta(days=20)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_due" eval="(DateTime.now() - timedelta(days=16)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_return" eval="(DateTime.now() - timedelta(days=13)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">returned</field>
+    </record>
+
+    <record id="loan_projector_cancelled" model="equipment.loan">
+        <field name="item_id" ref="item_projector"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="date_start" eval="(DateTime.now() - timedelta(days=8)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="date_due" eval="(DateTime.now() - timedelta(days=6)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">cancelled</field>
+    </record>
+
+</odoo>

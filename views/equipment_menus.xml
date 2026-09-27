@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_equipment_root"
+              name="Equipment"
+              sequence="30"/>
+
+    <menuitem id="menu_equipment_loan"
+              name="Loans"
+              parent="menu_equipment_root"
+              action="action_equipment_loan"
+              sequence="10"/>
+
+    <menuitem id="menu_equipment_item"
+              name="Items"
+              parent="menu_equipment_root"
+              action="action_equipment_item"
+              sequence="20"/>
+
+    <menuitem id="menu_equipment_configuration"
+              name="Configuration"
+              parent="menu_equipment_root"
+              groups="group_equipment_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_equipment_category"
+              name="Categories"
+              parent="menu_equipment_configuration"
+              action="action_equipment_category"
+              sequence="10"/>
+
+</odoo>

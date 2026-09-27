@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_equipment_loan" model="ir.actions.report">
+        <field name="name">Loan Receipt</field>
+        <field name="model">equipment.loan</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">porcelia_equipment_loan.report_equipment_loan_receipt</field>
+        <field name="report_file">porcelia_equipment_loan.report_equipment_loan_receipt</field>
+        <field name="print_report_name">'Loan Receipt - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_equipment_loan"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_equipment_loan_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="loan">
+                <t t-call="web.external_layout">
+                    <t t-set="doc" t-value="loan.with_context(lang=loan.borrower_id.lang)"/>
+                    <div class="page">
+                        <h2>Equipment Loan Receipt</h2>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Reference</strong>
+                                <p t-field="doc.name"/>
+                                <strong>Borrower</strong>
+                                <p t-field="doc.borrower_id.name"/>
+                                <p t-field="doc.borrower_id.email" t-options="{'widget': 'email'}"
+                                   t-if="doc.borrower_id.email"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Item</strong>
+                                <p><span t-field="doc.item_id.code"/> - <span t-field="doc.item_id.name"/></p>
+                                <strong>Category</strong>
+                                <p t-field="doc.item_id.category_id" t-options="{'no_link': True}"
+                                   t-if="doc.item_id.category_id"/>
+                            </div>
+                        </div>
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">Start</th>
+                                    <th class="text-start">Due</th>
+                                    <th class="text-start">Returned</th>
+                                    <th class="text-end">Days Late</th>
+                                    <th class="text-end">Penalty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-start"><span t-field="doc.date_start"/></td>
+                                    <td class="text-start"><span t-field="doc.date_due"/></td>
+                                    <td class="text-start">
+                                        <span t-field="doc.date_return" t-options="{'no_marker': True}"
+                                              t-if="doc.date_return"/>
+                                    </td>
+                                    <td class="text-end"><span t-field="doc.days_late"/></td>
+                                    <td class="text-end">
+                                        <span t-field="doc.penalty_amount" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row mt16">
+                            <div class="col-6">
+                                <strong>Item condition</strong>
+                                <p><span t-field="doc.item_id.condition_score"/> / 100</p>
+                            </div>
+                            <div class="col-6">
+                                <strong>Status</strong>
+                                <p t-field="doc.state"/>
+                            </div>
+                        </div>
+                        <div t-if="doc.notes" class="mt16">
+                            <strong>Notes</strong>
+                            <div t-field="doc.notes"/>
+                        </div>
+                        <div class="mt32">
+                            <span>Borrower signature</span>
+                            <span class="ms-5">Manager signature</span>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
