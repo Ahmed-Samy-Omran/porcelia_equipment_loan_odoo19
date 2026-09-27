@@ -16,7 +16,7 @@ class EquipmentCategory(models.Model):
     item_ids = fields.One2many("equipment.item", "category_id")
     item_count = fields.Integer(compute="_compute_item_count")
 
-    # build the full category name from its parent hierarchy, for example "Electronics / Computers / ...."
+    # Build the full category name from its parent hierarchy.
     @api.depends("name", "parent_id.complete_name")
     def _compute_complete_name(self):
         for category in self:

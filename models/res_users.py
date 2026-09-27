@@ -6,6 +6,7 @@ class ResUsers(models.Model):
 
     equipment_loan_count = fields.Integer(compute="_compute_equipment_loan_count")
 
+    # Count the loans each user is allowed to see.
     def _compute_equipment_loan_count(self):
         # No sudo: the count goes through the record rule, so a plain equipment user
         # only ever counts their own loans.

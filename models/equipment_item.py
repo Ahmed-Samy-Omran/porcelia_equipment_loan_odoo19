@@ -78,6 +78,7 @@ class EquipmentItem(models.Model):
                 )
         return super().create(vals_list)
 
+    # Compute the current availability state of each item.
     @api.depends("scrapped", "in_maintenance", "loan_ids.state", "loan_ids.date_return")
     def _compute_state(self):
         # Maintenance and scrapping are manual, the loan status is derived from the
@@ -104,6 +105,7 @@ class EquipmentItem(models.Model):
             else:
                 item.state = "available"
 
+    # Count loans except drafts and cancellations.
     @api.depends("loan_ids")
     def _compute_loan_count(self):
         counts = dict(
@@ -119,6 +121,7 @@ class EquipmentItem(models.Model):
         for item in self:
             item.loan_count = counts.get(item, 0)
 
+    # Sum the days each item has been on loan.
     @api.depends("loan_ids.duration_days")
     def _compute_total_days_on_loan(self):
         # duration_days is stored on the loan, so the total is a single SUM in the

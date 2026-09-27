@@ -54,15 +54,16 @@ flowchart TB
     Loan --> Data
 ```
 
-## What I deliberately skipped
+## ما لحقتش بسبب الوقت بس هتعلمها واعملها
 
-| Item | Why it is not included |
+| Item | Why it is not included yet |
 | --- | --- |
 | **OWL condition gauge (B1)** | `condition_score` is implemented as a regular integer field with a database check from 0 to 100. I did not build the custom OWL field widget. |
-| **OWL dashboard (B2)** | I did not add a client action, dashboard data endpoint, menu entry, or frontend assets. |
+| **OWL dashboard (B2)** | I did not add a client action, dashboard data endpoint, or menu entry. |
 | **Systray overdue counter (B3)** | This was a bonus frontend feature and was not implemented. |
-| **Gauge and dashboard screenshots/GIF** | These interfaces do not exist in this repository. I did not add mock screenshots because that would misrepresent the delivered code. |
-| **Frontend asset bundle** | There is no JavaScript or SCSS implementation, so `static/src/` intentionally contains only `.gitkeep`. |
+
+All three are frontend features that I ran out of time for. I plan to learn
+them and add them later.
 
 ## Installation
 
@@ -92,6 +93,24 @@ flowchart TB
 To apply later source changes, replace `-i` with `-u porcelia_equipment_loan`.
 
 ## Tests
+
+The module ships a test suite in `tests/test_equipment_loan.py`. It is run
+automatically on install and update, and it covers the following areas:
+
+| Area | What the tests check |
+| --- | --- |
+| **Booking overlap** | Two confirmed loans cannot overlap, and touching periods are still allowed. Draft loans do not block an item. |
+| **Date validation** | The due date must be after the start date. |
+| **Lateness and penalty** | Late returns produce a penalty, while early and on-time returns do not, and an open overdue loan keeps reporting its current lateness. |
+| **Workflow** | Draft, confirm, return, cancel, and reset transitions, including the transitions that must be refused. |
+| **Deletion rules** | Only draft or cancelled loans can be deleted, and a regular user cannot delete a loan or an item. |
+| **Item state** | The item state follows confirmed unreturned loans, and maintenance or scrapping wins over them. |
+| **Security** | A user can read only their own loans, a manager sees all of them, and reporting on another user's loan is refused. |
+| **Return wizard** | Several loans are returned at once, and loans that are not confirmed, or that are returned before they started, are refused. |
+| **Overdue cron** | The job flags late loans once, does not duplicate the activity when the flag is reset, and ignores returned or not-yet-due loans. |
+| **Sequences** | Item codes and loan references come from their sequences and stay unique. |
+| **Aggregates** | The grouped counters are produced in a single query, and the category item count is correct. |
+| **Report** | The QWeb receipt renders every selected loan. |
 
 This is the command used to run the module tests locally. The password is shown
 as a placeholder so a local credential is not committed to the repository.
@@ -155,4 +174,4 @@ porcelia_equipment_loan/
 
 ## Author
 
-Porcelia — Technical Team.
+Ahmed Omran.

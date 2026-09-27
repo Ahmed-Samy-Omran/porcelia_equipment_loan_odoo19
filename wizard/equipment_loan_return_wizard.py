@@ -14,16 +14,19 @@ class EquipmentLoanReturnWizard(models.TransientModel):
     )
     note = fields.Text()
 
+    # Get the current condition score for the selected item.
     @api.model
     def _default_condition_score(self):
         loans = self._selected_loans()
         return loans[:1].item_id.condition_score or 100
 
+    # Get the loans selected when the wizard was opened.
     def _selected_loans(self):
         """Loans picked in the list view, or the ones the caller passed in the context."""
         loan_ids = self.env.context.get("active_ids") or []
         return self.env["equipment.loan"].browse(loan_ids).exists()
 
+    # Return the selected confirmed loans.
     def action_confirm_return(self):
         loans = self._selected_loans()
         if not loans:

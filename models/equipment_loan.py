@@ -67,6 +67,7 @@ class EquipmentLoan(models.Model):
     _item_state_due_idx = models.Index("(item_id, state, date_due)")
     _borrower_state_idx = models.Index("(borrower_id, state)")
 
+    # Generate a unique reference for new loans.
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -81,6 +82,7 @@ class EquipmentLoan(models.Model):
     # Computed fields
     # ------------------------------------------------------------------
 
+    # Calculate the whole days a loan is late.
     def _late_days(self):
         """Whole days late, measured against the return date or against now while still out."""
         self.ensure_one()
@@ -89,6 +91,7 @@ class EquipmentLoan(models.Model):
         end = self.date_return or fields.Datetime.now()
         return max(0, math.ceil((end - self.date_due).total_seconds() / 86400))
 
+    # Calculate the days an item has been out.
     def _loan_duration(self):
         """Days the item is out, using the due date while the loan is still open."""
         self.ensure_one()
@@ -97,16 +100,19 @@ class EquipmentLoan(models.Model):
             return 0
         return max(0, math.ceil((end - self.date_start).total_seconds() / 86400))
 
+    # Compute the number of late days.
     @api.depends("date_return", "date_due")
     def _compute_days_late(self):
         for loan in self:
             loan.days_late = loan._late_days()
 
+    # Compute the late-return penalty.
     @api.depends("date_return", "date_due", "item_id", "item_id.daily_rate")
     def _compute_penalty_amount(self):
         for loan in self:
             loan.penalty_amount = loan._late_days() * loan.item_id.daily_rate
 
+    # Compute the duration of each loan.
     @api.depends("date_start", "date_due", "date_return")
     def _compute_duration_days(self):
         for loan in self:
@@ -116,6 +122,7 @@ class EquipmentLoan(models.Model):
     # Constraints
     # ------------------------------------------------------------------
 
+    # Find confirmed loans that overlap this loan period.
     def _overlapping_loans(self):
         """Loans of the same item that are confirmed, not returned and overlap the period."""
         self.ensure_one()
@@ -131,6 +138,7 @@ class EquipmentLoan(models.Model):
             ],
         )
 
+    # Prevent overlapping confirmed loans for the same item.
     @api.constrains("item_id", "date_start", "date_due", "state")
     def _check_no_overlapping_loan(self):
         for loan in self:
@@ -148,12 +156,14 @@ class EquipmentLoan(models.Model):
                     ),
                 )
 
+    # Require the due date to follow the start date.
     @api.constrains("date_start", "date_due")
     def _check_date_order(self):
         for loan in self:
             if loan.date_start and loan.date_due and loan.date_due <= loan.date_start:
                 raise ValidationError(_("The due date must be strictly after the start date."))
 
+    # Require a return date for returned loans.
     @api.constrains("state", "date_return")
     def _check_returned_has_date(self):
         for loan in self:
@@ -164,6 +174,7 @@ class EquipmentLoan(models.Model):
     # Workflow
     # ------------------------------------------------------------------
 
+    # Confirm the selected draft loans.
     def action_confirm(self):
         for loan in self:
             if loan.state != "draft":
@@ -190,6 +201,7 @@ class EquipmentLoan(models.Model):
 
         return action
 
+    # Cancel loans that have not been returned.
     def action_cancel(self):
         for loan in self:
             if loan.state == "returned":
@@ -201,6 +213,7 @@ class EquipmentLoan(models.Model):
         self.write({"state": "cancelled", "is_overdue": False})
         return True
 
+    # Reset selected loans to draft.
     def action_draft(self):
         for loan in self:
             if loan.state == "draft":
@@ -208,6 +221,7 @@ class EquipmentLoan(models.Model):
         self.write({"state": "draft", "date_return": False, "is_overdue": False})
         return True
 
+    # Allow deletion only for draft or cancelled loans.
     @api.ondelete(at_uninstall=False)
     def _unlink_except_draft_or_cancelled(self):
         if any(loan.state not in ("draft", "cancelled") for loan in self):
@@ -217,6 +231,7 @@ class EquipmentLoan(models.Model):
     # Scheduled action
     # ------------------------------------------------------------------
 
+    # Find open loans that the daily job must flag.
     @api.model
     def _cron_pending_overdue_loans(self):
         """Return the open loans the daily job is about to flag."""
@@ -229,6 +244,7 @@ class EquipmentLoan(models.Model):
             ],
         )
 
+    # Flag overdue loans and schedule borrower reminders.
     @api.model
     def _cron_flag_overdue_loans(self):
         """Flag loans that are past due and schedule a reminder on the borrower.
