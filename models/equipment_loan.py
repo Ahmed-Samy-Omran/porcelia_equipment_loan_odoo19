@@ -14,7 +14,7 @@ class EquipmentLoan(models.Model):
     OVERDUE_ACTIVITY_SUMMARY = "Return overdue equipment"
 
     name = fields.Char(
-        required=True, copy=False, index=True, default=lambda self: _("New"),
+        required=True, copy=False, index=True, default="New",
     )
     item_id = fields.Many2one(
         "equipment.item", required=True, ondelete="restrict", check_company=True,
@@ -70,8 +70,11 @@ class EquipmentLoan(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if not vals.get("name") or vals["name"] == _("New"):
-                vals["name"] = self.env["ir.sequence"].next_by_code("equipment.loan") or _("New")
+            if not vals.get("name") or vals["name"] == "New":
+                vals["name"] = (
+                    self.env["ir.sequence"].next_by_code("equipment.loan")
+                    or "New"
+                )
         return super().create(vals_list)
 
     # ------------------------------------------------------------------
