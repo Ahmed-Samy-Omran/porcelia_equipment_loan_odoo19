@@ -27,6 +27,8 @@ The backend part of the project is complete.
   views, categories, menus, smart buttons, and the user-form extension.
 - **Wizard, report, and cron (A5–A7):** a multi-loan return wizard, a QWeb PDF
   loan receipt, and a daily overdue-loan reminder job.
+- **Arabic interface:** Arabic translations for the module are provided in
+  `i18n/ar.po`.
 
 ## Backend map
 
@@ -64,6 +66,15 @@ flowchart TB
 
 All three are frontend features that I ran out of time for. I plan to learn
 them and add them later.
+
+## Arabic interface
+
+The module includes an Arabic translation file at `i18n/ar.po`. It translates
+the module's menus, labels, buttons, workflow messages, and report text.
+
+To use it, activate Arabic from **Settings → Translations → Languages**, then
+set Arabic as the user's language. Upgrade the module after translation-source
+changes so Odoo imports the latest entries.
 
 ## Installation
 
@@ -143,13 +154,10 @@ The latest local run completed with **0 failures and 0 errors**.
    and returned loans do not block an item.
 3. **The penalty is the item's daily rate multiplied by late days.** I use
    `ceil`, so part of a late day counts as one full day.
-4. **I keep `days_late` and `penalty_amount` live rather than stored for open
-   loans.** Their value depends on the current time. Adding `store=True` alone
-   would leave a stored value stale until one of its declared dependencies
-   changed. A fully stored design would also need a scheduled daily
-   recomputation. I chose live values so an open overdue loan always shows its
-   current lateness when it is read, even though this does not match a literal
-   “computed and stored” reading of the brief.
+4. **Open-loan lateness is refreshed daily.** `days_late` and
+   `penalty_amount` are stored fields. The daily overdue cron recomputes them
+   for confirmed, unreturned loans because their values depend on the current
+   date.
 5. **The overdue cron owns `is_overdue`.** The flag records that the daily job
    has processed a late loan; dates remain the source of truth for lateness and
    penalties.
