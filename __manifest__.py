@@ -1,6 +1,13 @@
 {
     "name": "Porcelia Equipment Loan Manager",
     "summary": "Borrow, track and return company equipment",
+    # Odoo renders module descriptions as reStructuredText; README.md stays Markdown for Git hosting.
+    "description": """
+Equipment Loan Manager
+======================
+
+Borrow, track, and return company equipment.
+""",
     "version": "19.0.1.0.0",
     "category": "Inventory/Equipment",
     "license": "LGPL-3",

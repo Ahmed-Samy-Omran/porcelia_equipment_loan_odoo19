@@ -50,9 +50,11 @@ class EquipmentLoan(models.Model):
         index=True,
         help="Set by the daily scheduled action, never by hand.",
     )
-    days_late = fields.Integer(compute="_compute_days_late")
+    days_late = fields.Integer(compute="_compute_days_late", store=True)
     penalty_amount = fields.Monetary(
-        compute="_compute_penalty_amount", currency_field="currency_id",
+        compute="_compute_penalty_amount",
+        currency_field="currency_id",
+        store=True,
     )
     currency_id = fields.Many2one(
         "res.currency", related="item_id.currency_id", store=True, readonly=True,
@@ -253,6 +255,13 @@ class EquipmentLoan(models.Model):
         does not post a second message nor schedule a second activity.
         """
         today = fields.Date.context_today(self)
+        open_loans = self.search([
+            ("state", "=", "confirmed"),
+            ("date_return", "=", False),
+        ])
+        # Stored lateness depends on the current time, so refresh it every day.
+        open_loans._compute_days_late()
+        open_loans._compute_penalty_amount()
         loans = self._cron_pending_overdue_loans()
         for loan in loans:
             loan.is_overdue = True
