@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="240" viewBox="0 0 800 240" role="img" aria-labelledby="title">
+  <title id="title">Porcelia</title>
+  <g fill="none" stroke="#5B3B73" stroke-linecap="round" stroke-linejoin="round" stroke-width="18">
+    <path d="M48 64h90v90H48z"/>
+    <path d="m93 34 62 34v72l-62 34-62-34V68z" fill="#9B7BB4" stroke="none"/>
+    <path d="m93 34 62 34-62 34-62-34z" fill="#CDBBDB" stroke="none"/>
+    <path d="M93 102v72"/>
+    <path d="m31 68 62 34 62-34"/>
+  </g>
+  <text x="198" y="139" fill="#34223F" font-family="Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="3">PORCELIA</text>
+  <text x="202" y="180" fill="#7A658A" font-family="Arial, sans-serif" font-size="25" letter-spacing="8">EQUIPMENT MANAGEMENT</text>
+</svg>

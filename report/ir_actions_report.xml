@@ -18,11 +18,15 @@
                 <t t-call="web.external_layout">
                     <t t-set="doc" t-value="loan.with_context(lang=loan.borrower_id.lang)"/>
                     <div class="page">
-                        <h2>Equipment Loan Receipt</h2>
-                        <div class="row mt32 mb32">
+                        <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+                            <div>
+                                <h2 class="mb-1">Equipment Loan Receipt</h2>
+                                <span class="text-muted">Loan reference: <span t-field="doc.name"/></span>
+                            </div>
+                            <span t-field="doc.state" class="badge text-bg-light border px-3 py-2"/>
+                        </div>
+                        <div class="row mb-4">
                             <div class="col-6">
-                                <strong>Reference</strong>
-                                <p t-field="doc.name"/>
                                 <strong>Borrower</strong>
                                 <p t-field="doc.borrower_id.name"/>
                                 <p t-field="doc.borrower_id.email" t-options="{'widget': 'email'}"
@@ -61,23 +65,27 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="row mt16">
+                        <div class="row mt-4">
                             <div class="col-6">
                                 <strong>Item condition</strong>
                                 <p><span t-field="doc.item_id.condition_score"/> / 100</p>
                             </div>
                             <div class="col-6">
-                                <strong>Status</strong>
-                                <p t-field="doc.state"/>
+                                <strong>Loan period</strong>
+                                <p><span t-field="doc.date_start"/> — <span t-field="doc.date_due"/></p>
                             </div>
                         </div>
                         <div t-if="doc.notes" class="mt16">
                             <strong>Notes</strong>
                             <div t-field="doc.notes"/>
                         </div>
-                        <div class="mt32">
-                            <span>Borrower signature</span>
-                            <span class="ms-5">Manager signature</span>
+                        <div class="row mt-5 pt-4">
+                            <div class="col-6">
+                                <span class="border-top d-inline-block pt-2" style="min-width: 180px;">Borrower signature</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="border-top d-inline-block pt-2" style="min-width: 180px;">Manager signature</span>
+                            </div>
                         </div>
                     </div>
                 </t>
