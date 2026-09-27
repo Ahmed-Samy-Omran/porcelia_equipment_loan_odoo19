@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Loan receipt report action. -->
     <record id="action_report_equipment_loan" model="ir.actions.report">
         <field name="name">Loan Receipt</field>
         <field name="model">equipment.loan</field>
@@ -12,79 +13,65 @@
         <field name="binding_type">report</field>
     </record>
 
+    <!-- Printable receipt for one or more equipment loans. -->
     <template id="report_equipment_loan_receipt">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="loan">
                 <t t-call="web.external_layout">
-                    <t t-set="doc" t-value="loan.with_context(lang=loan.borrower_id.lang)"/>
                     <div class="page">
-                        <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-                            <div>
-                                <h2 class="mb-1">Equipment Loan Receipt</h2>
-                                <span class="text-muted">Loan reference: <span t-field="doc.name"/></span>
-                            </div>
-                            <span t-field="doc.state" class="badge text-bg-light border px-3 py-2"/>
-                        </div>
+                        <h2 class="mb-4">Equipment Loan Receipt</h2>
+                        <p>
+                            <strong>Reference:</strong>
+                            <span t-field="loan.name"/>
+                        </p>
                         <div class="row mb-4">
                             <div class="col-6">
                                 <strong>Borrower</strong>
-                                <p t-field="doc.borrower_id.name"/>
-                                <p t-field="doc.borrower_id.email" t-options="{'widget': 'email'}"
-                                   t-if="doc.borrower_id.email"/>
+                                <p t-field="loan.borrower_id.name"/>
+                                <p t-field="loan.borrower_id.email" t-if="loan.borrower_id.email"/>
                             </div>
                             <div class="col-6">
                                 <strong>Item</strong>
-                                <p><span t-field="doc.item_id.code"/> - <span t-field="doc.item_id.name"/></p>
-                                <strong>Category</strong>
-                                <p t-field="doc.item_id.category_id" t-options="{'no_link': True}"
-                                   t-if="doc.item_id.category_id"/>
+                                <p>
+                                    <span t-field="loan.item_id.code"/> -
+                                    <span t-field="loan.item_id.name"/>
+                                </p>
+                                <p t-field="loan.item_id.category_id" t-if="loan.item_id.category_id"/>
                             </div>
                         </div>
-                        <table class="table table-sm o_main_table">
+                        <table class="table table-sm">
                             <thead>
                                 <tr>
-                                    <th class="text-start">Start</th>
-                                    <th class="text-start">Due</th>
-                                    <th class="text-start">Returned</th>
-                                    <th class="text-end">Days Late</th>
-                                    <th class="text-end">Penalty</th>
+                                    <th>Start</th>
+                                    <th>Due</th>
+                                    <th>Returned</th>
+                                    <th>Condition</th>
+                                    <th>Penalty</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-start"><span t-field="doc.date_start"/></td>
-                                    <td class="text-start"><span t-field="doc.date_due"/></td>
-                                    <td class="text-start">
-                                        <span t-field="doc.date_return" t-options="{'no_marker': True}"
-                                              t-if="doc.date_return"/>
-                                    </td>
-                                    <td class="text-end"><span t-field="doc.days_late"/></td>
-                                    <td class="text-end">
-                                        <span t-field="doc.penalty_amount" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    <td><span t-field="loan.date_start"/></td>
+                                    <td><span t-field="loan.date_due"/></td>
+                                    <td><span t-field="loan.date_return" t-if="loan.date_return"/></td>
+                                    <td><span t-field="loan.item_id.condition_score"/> / 100</td>
+                                    <td>
+                                        <span t-field="loan.penalty_amount"
+                                              t-options="{'widget': 'monetary', 'display_currency': loan.currency_id}"/>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="row mt-4">
-                            <div class="col-6">
-                                <strong>Item condition</strong>
-                                <p><span t-field="doc.item_id.condition_score"/> / 100</p>
-                            </div>
-                            <div class="col-6">
-                                <strong>Loan period</strong>
-                                <p><span t-field="doc.date_start"/> — <span t-field="doc.date_due"/></p>
-                            </div>
-                        </div>
-                        <div t-if="doc.notes" class="mt16">
+                        <div t-if="loan.notes" class="mt-4">
                             <strong>Notes</strong>
-                            <div t-field="doc.notes"/>
+                            <div t-field="loan.notes"/>
                         </div>
-                        <div class="row mt-5 pt-4">
+                        <div class="row mt-5">
                             <div class="col-6">
-                                <span class="border-top d-inline-block pt-2" style="min-width: 180px;">Borrower signature</span>
+                                <p>Borrower signature: ____________________</p>
                             </div>
-                            <div class="col-6 text-end">
-                                <span class="border-top d-inline-block pt-2" style="min-width: 180px;">Manager signature</span>
+                            <div class="col-6">
+                                <p>Manager signature: ____________________</p>
                             </div>
                         </div>
                     </div>
