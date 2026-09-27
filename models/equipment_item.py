@@ -17,6 +17,13 @@ class EquipmentItem(models.Model):
     )
     category_id = fields.Many2one("equipment.category", ondelete="restrict")
     image_1920 = fields.Image(copy=True)
+    image_128 = fields.Image(
+        "Image 128",
+        related="image_1920",
+        max_width=128,
+        max_height=128,
+        store=True,
+    )
     active = fields.Boolean(default=True)
     company_id = fields.Many2one(
         "res.company", required=True, default=lambda self: self.env.company, index=True,

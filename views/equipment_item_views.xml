@@ -9,11 +9,13 @@
             <kanban default_group_by="state" sample_size="5" quick_create="false">
                 <field name="state"/>
                 <field name="category_id"/>
+                <field name="image_128"/>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_record_top">
-                                <img t-att-src="image_1920" class="o_kanban_image" alt="Item"/>
+                                <img t-att-src="record.image_128.raw_value ? kanban_image('equipment.item', 'image_128', record.id.raw_value) : '/web/static/img/placeholder.png'"
+                                     class="o_kanban_image" alt="Item"/>
                                 <div class="o_kanban_record_headings">
                                     <strong class="o_kanban_record_title"><field name="name"/></strong>
                                     <small class="o_kanban_record_subtitle text-muted"><field name="code"/></small>
@@ -125,6 +127,7 @@
         </field>
     </record>
 
+    <!-- Main equipment item window action. -->
     <record id="action_equipment_item" model="ir.actions.act_window">
         <field name="name">Items</field>
         <field name="res_model">equipment.item</field>
@@ -137,6 +140,7 @@
         </field>
     </record>
 
+    <!-- Equipment item window action filtered by category. -->
     <record id="action_equipment_item_by_category" model="ir.actions.act_window">
         <field name="name">Items</field>
         <field name="res_model">equipment.item</field>
