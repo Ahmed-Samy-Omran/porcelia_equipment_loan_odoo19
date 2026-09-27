@@ -133,4 +133,15 @@
         </field>
     </record>
 
+    <record id="action_equipment_item_by_category" model="ir.actions.act_window">
+        <field name="name">Items</field>
+        <field name="res_model">equipment.item</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="equipment_item_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">This category has no item yet</p>
+            <p>Add a piece of equipment and it is filed in this category.</p>
+        </field>
+    </record>
+
 </odoo>

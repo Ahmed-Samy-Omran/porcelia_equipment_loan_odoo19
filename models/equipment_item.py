@@ -132,16 +132,19 @@ class EquipmentItem(models.Model):
         for item in self:
             item.total_days_on_loan = totals.get(item, 0)
 
+    # Open the loans belonging to this equipment.
     def action_view_loans(self):
         self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Loans"),
-            "res_model": "equipment.loan",
-            "view_mode": "list,form",
-            "domain": [("item_id", "=", self.id)],
-            "context": {"default_item_id": self.id},
+
+        action = self.env.ref(
+            "porcelia_equipment_loan.action_equipment_loan_by_item",
+        ).read()[0]
+        action["domain"] = [("item_id", "=", self.id)]
+        action["context"] = {
+            "default_item_id": self.id,
         }
+
+        return action
 
     def action_toggle_maintenance(self):
         for item in self:

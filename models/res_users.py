@@ -1,4 +1,4 @@
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class ResUsers(models.Model):
@@ -17,13 +17,16 @@ class ResUsers(models.Model):
         for user in self:
             user.equipment_loan_count = counts.get(user, 0)
 
+    # Open the loans belonging to this user.
     def action_view_equipment_loans(self):
         self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Loans"),
-            "res_model": "equipment.loan",
-            "view_mode": "list,form",
-            "domain": [("borrower_id", "=", self.id)],
-            "context": {"create": False},
+
+        action = self.env.ref(
+            "porcelia_equipment_loan.action_equipment_loan_by_borrower",
+        ).read()[0]
+        action["domain"] = [("borrower_id", "=", self.id)]
+        action["context"] = {
+            "create": False,
         }
+
+        return action

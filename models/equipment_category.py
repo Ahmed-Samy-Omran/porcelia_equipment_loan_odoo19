@@ -1,4 +1,4 @@
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class EquipmentCategory(models.Model):
@@ -16,6 +16,7 @@ class EquipmentCategory(models.Model):
     item_ids = fields.One2many("equipment.item", "category_id")
     item_count = fields.Integer(compute="_compute_item_count")
 
+    # build the full category name from its parent hierarchy, for example "Electronics / Computers / ...."
     @api.depends("name", "parent_id.complete_name")
     def _compute_complete_name(self):
         for category in self:
@@ -24,6 +25,7 @@ class EquipmentCategory(models.Model):
             else:
                 category.complete_name = category.name
 
+    # Count the items directly assigned to each category.
     @api.depends("item_ids")
     def _compute_item_count(self):
         # One grouped query for the whole recordset instead of one count per category.
@@ -35,13 +37,16 @@ class EquipmentCategory(models.Model):
         for category in self:
             category.item_count = counts.get(category, 0)
 
+    # Open the items belonging to this category.
     def action_view_items(self):
         self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Items"),
-            "res_model": "equipment.item",
-            "view_mode": "kanban,list,form",
-            "domain": [("category_id", "=", self.id)],
-            "context": {"default_category_id": self.id},
+
+        action = self.env.ref(
+            "porcelia_equipment_loan.action_equipment_item_by_category",
+        ).read()[0]
+        action["domain"] = [("category_id", "=", self.id)]
+        action["context"] = {
+            "default_category_id": self.id,
         }
+
+        return action

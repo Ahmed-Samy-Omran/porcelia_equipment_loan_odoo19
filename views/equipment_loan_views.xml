@@ -118,4 +118,16 @@
         </field>
     </record>
 
+    <record id="action_equipment_loan_by_item" model="ir.actions.act_window">
+        <field name="name">Loans</field>
+        <field name="res_model">equipment.loan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_equipment_loan_by_borrower" model="ir.actions.act_window">
+        <field name="name">Loans</field>
+        <field name="res_model">equipment.loan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
 </odoo>

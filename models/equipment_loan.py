@@ -170,20 +170,22 @@ class EquipmentLoan(models.Model):
         self.write({"state": "confirmed"})
         return True
 
+    # Open the return wizard for the selected loans.
     def action_return(self):
         for loan in self:
             if loan.state != "confirmed":
                 raise UserError(
                     _("%(name)s cannot be returned because it is %(state)s.", name=loan.name, state=loan.state),
                 )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Return Equipment"),
-            "res_model": "equipment.loan.return.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {"active_model": "equipment.loan", "active_ids": self.ids},
+        action = self.env.ref(
+            "porcelia_equipment_loan.action_equipment_loan_return_wizard",
+        ).read()[0]
+        action["context"] = {
+            "active_model": "equipment.loan",
+            "active_ids": self.ids,
         }
+
+        return action
 
     def action_cancel(self):
         for loan in self:
