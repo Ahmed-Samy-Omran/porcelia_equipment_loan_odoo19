@@ -126,7 +126,7 @@
             </search>
         </field>
     </record>
-
+    
     <!-- Main equipment item window action. -->
     <record id="action_equipment_item" model="ir.actions.act_window">
         <field name="name">Items</field>
@@ -153,3 +153,4 @@
     </record>
 
 </odoo>
+    

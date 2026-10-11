@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <list string="Loans"
                   decoration-danger="is_overdue"
-                  decoration-muted="state == 'cancelled'"
+                  decoration-muted  ="state == 'cancelled'"
                   decoration-bf="state == 'confirmed' and not is_overdue">
                 <field name="name"/>
                 <field name="item_id"/>

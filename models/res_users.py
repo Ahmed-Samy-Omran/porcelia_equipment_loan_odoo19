@@ -12,7 +12,9 @@ class ResUsers(models.Model):
         # only ever counts their own loans.
         counts = dict(
             self.env["equipment.loan"]._read_group(
-                [("borrower_id", "in", self.ids)], ["borrower_id"], ["__count"],
+                [("borrower_id", "in", self.ids)], 
+                ["borrower_id"], 
+               ["__count"], 
             ),
         )
         for user in self:

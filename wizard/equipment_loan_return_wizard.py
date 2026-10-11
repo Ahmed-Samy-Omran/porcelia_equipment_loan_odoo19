@@ -25,7 +25,7 @@ class EquipmentLoanReturnWizard(models.TransientModel):
         """Loans picked in the list view, or the ones the caller passed in the context."""
         loan_ids = self.env.context.get("active_ids") or []
         return self.env["equipment.loan"].browse(loan_ids).exists()
-
+    
     # Return the selected confirmed loans.
     def action_confirm_return(self):
         loans = self._selected_loans()

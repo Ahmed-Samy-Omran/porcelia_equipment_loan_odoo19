@@ -5,11 +5,11 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
-class EquipmentLoan(models.Model):
+class EquipmentLoan(models.Model):  
     _name = "equipment.loan"
     _description = "Equipment Loan"
     _inherit = ["mail.thread", "mail.activity.mixin"]
-    _order = "date_start desc, id desc"
+    _order = "date_start desc, id desc"   # recent date_start appear first 
 
     OVERDUE_ACTIVITY_SUMMARY = "Return overdue equipment"
 
@@ -27,11 +27,14 @@ class EquipmentLoan(models.Model):
         check_company=True,
     )
     company_id = fields.Many2one(
-        "res.company", required=True, default=lambda self: self.env.company, index=True,
+        "res.company",
+          required=True,
+            default=lambda self: self.env.company,
+              index=True,
     )
     date_start = fields.Datetime(required=True, default=fields.Datetime.now)
-    date_due = fields.Datetime(required=True, tracking=True)
-    date_return = fields.Datetime(copy=False, readonly=True)
+    date_due = fields.Datetime(required=True, tracking=True) #the date the equipment suppose return
+    date_return = fields.Datetime(copy=False, readonly=True) #the actually date the equipment return
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -45,13 +48,15 @@ class EquipmentLoan(models.Model):
         tracking=True,
     )
     notes = fields.Html()
+
     is_overdue = fields.Boolean(
         copy=False,
         index=True,
         help="Set by the daily scheduled action, never by hand.",
     )
     days_late = fields.Integer(compute="_compute_days_late", store=True)
-    penalty_amount = fields.Monetary(
+    # The penalty money for delaying the equipment delivery.
+    penalty_amount = fields.Monetary( 
         compute="_compute_penalty_amount",
         currency_field="currency_id",
         store=True,
@@ -59,6 +64,7 @@ class EquipmentLoan(models.Model):
     currency_id = fields.Many2one(
         "res.currency", related="item_id.currency_id", store=True, readonly=True,
     )
+    # How many of days equipment remained outside the store?
     duration_days = fields.Integer(
         compute="_compute_duration_days",
         store=True,
@@ -81,14 +87,14 @@ class EquipmentLoan(models.Model):
         return super().create(vals_list)
 
     # ------------------------------------------------------------------
-    # Computed fields
+    # Computed fields 
     # ------------------------------------------------------------------
 
     # Calculate the whole days a loan is late.
     def _late_days(self):
         """Whole days late, measured against the return date or against now while still out."""
         self.ensure_one()
-        if not self.date_due:
+        if not self.date_due: 
             return 0
         end = self.date_return or fields.Datetime.now()
         return max(0, math.ceil((end - self.date_due).total_seconds() / 86400))
@@ -224,7 +230,7 @@ class EquipmentLoan(models.Model):
         return True
 
     # Allow deletion only for draft or cancelled loans.
-    @api.ondelete(at_uninstall=False)
+    @api.ondelete(at_uninstall=False)   
     def _unlink_except_draft_or_cancelled(self):
         if any(loan.state not in ("draft", "cancelled") for loan in self):
             raise UserError(_("Only draft or cancelled loans can be deleted."))
@@ -262,9 +268,11 @@ class EquipmentLoan(models.Model):
         # Stored lateness depends on the current time, so refresh it every day.
         open_loans._compute_days_late()
         open_loans._compute_penalty_amount()
+        
         loans = self._cron_pending_overdue_loans()
         for loan in loans:
             loan.is_overdue = True
+            
             loan.message_post(
                 body=_("This loan was due on %s and is still open.", loan.date_due),
             )

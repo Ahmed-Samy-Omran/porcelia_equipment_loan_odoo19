@@ -16,6 +16,7 @@ class EquipmentItem(models.Model):
         default="New",
     )
     category_id = fields.Many2one("equipment.category", ondelete="restrict")
+
     image_1920 = fields.Image(copy=True)
     image_128 = fields.Image(
         "Image 128",
@@ -24,14 +25,18 @@ class EquipmentItem(models.Model):
         max_height=128,
         store=True,
     )
+
     active = fields.Boolean(default=True)
+
     company_id = fields.Many2one(
         "res.company", required=True, default=lambda self: self.env.company, index=True,
     )
+
     daily_rate = fields.Monetary(currency_field="currency_id")
     currency_id = fields.Many2one(
         "res.currency", required=True, default=lambda self: self.env.company.currency_id,
     )
+
     condition_score = fields.Integer(
         string="Condition Score",
         required=True,
@@ -39,6 +44,7 @@ class EquipmentItem(models.Model):
         tracking=True,
         help="Condition of the item, from 0 (broken) to 100 (as new).",
     )
+
     in_maintenance = fields.Boolean(
         help="The item is being serviced and cannot be borrowed.",
     )
@@ -56,6 +62,7 @@ class EquipmentItem(models.Model):
         index=True,
         tracking=True,
     )
+
     loan_ids = fields.One2many("equipment.loan", "item_id")
     loan_count = fields.Integer(compute="_compute_loan_count")
     total_days_on_loan = fields.Integer(
@@ -64,7 +71,8 @@ class EquipmentItem(models.Model):
     )
 
     _code_unique = models.UniqueIndex(
-        "(code, company_id)", "The equipment code must be unique per company.",
+        "(code, company_id)", 
+        "The equipment code must be unique per company.",
     )
     _condition_score_range = models.Constraint(
         "CHECK(condition_score >= 0 AND condition_score <= 100)",
@@ -160,7 +168,7 @@ class EquipmentItem(models.Model):
 
         return action
 
-    # Toggle the maintenance status of the selected items.
+    # Toggle the maintenance status of the selected items.The item  can't go into maintenance while it's currently on loan to the customer.
     def action_toggle_maintenance(self):
         for item in self:
             if item.state == "on_loan":

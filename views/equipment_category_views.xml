@@ -22,7 +22,9 @@
             <form string="Category">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_items" type="object" class="oe_stat_button" icon="fa-cubes">
+                        <button name="action_view_items" type="object" 
+                        class="oe_stat_button" 
+                        icon="fa-cubes">
                             <field name="item_count" widget="statinfo" string="Items"/>
                         </button>
                     </div>
@@ -32,7 +34,7 @@
                     </div>
                     <group>
                         <field name="parent_id" options="{'no_create': True}"/>
-                        <field name="child_ids" widget="many2one_tags"/>
+                        <field name="child_ids" />
                     </group>
                 </sheet>
             </form>
@@ -47,11 +49,19 @@
             <search string="Categories">
                 <field name="name"/>
                 <field name="parent_id"/>
-                <filter name="filter_top_level" string="Top Level Categories" domain="[('parent_id', '=', False)]"/>
+                <filter name="filter_top_level"
+                        string="Top Level Categories"
+                        domain="[('parent_id', '=', False)]"/>
                 <separator/>
-                <filter name="filter_with_items" string="With Items" domain="[('item_ids', '!=', False)]"/>
+                <filter
+                    name="filter_with_items" 
+                    string="With Items"
+                    domain="[('item_ids', '!=', False)]"/>
                 <group>
-                    <filter name="group_parent" string="Parent Category" context="{'group_by': 'parent_id'}"/>
+                    <filter
+                     name="group_parent"
+                     string="Parent Category"
+                     context="{'group_by': 'parent_id'}"/>
                 </group>
             </search>
         </field>
